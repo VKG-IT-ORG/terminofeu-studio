@@ -41,13 +41,16 @@ const portableTextComponents = {
 }
 
 const groqQuery = `
-*[_type == 'entry' && level == 'IOTH' && status == 'approved'] | order(content.de.terms[0].designation asc) {
+*[_type == 'entry' && !(_id in path('drafts.**')) && level == 'IOTH' && status == 'approved'] | order(content.de.terms[0].designation asc) {
   _id,
   'terms': content.de.terms[]{_key, designation, abbreviation, status},
   'definition': content.de.definition,
   'note': content.de.note
 }
 `
+
+const listenQuery =
+  "*[_type == 'entry' && !(_id in path('drafts.**')) && level == 'IOTH' && status == 'approved']"
 
 function Anhang2() {
   const [rows, setRows] = useState([])
@@ -57,56 +60,85 @@ function Anhang2() {
 
   useEffect(() => {
     let cancelled = false
+    let requestId = 0
 
-    sanityClient
-      .fetch(groqQuery)
-      .then((entries) => {
-        if (cancelled) return
+    const refreshRows = () => {
+      const currentRequestId = ++requestId
+      sanityClient
+        .fetch(groqQuery)
+        .then((entries) => {
+          if (cancelled || currentRequestId !== requestId) return
 
-        const rows = entries
-          .map((entry) => {
-            const terms = entry.terms || []
-            const vedetteIndex = terms.findIndex(
-              (term) => term.status === 'main'
+          const rows = entries
+            .map((entry) => {
+              const terms = entry.terms || []
+              const vedetteIndex = terms.findIndex(
+                (term) => term.status === 'main'
+              )
+              const orderedTerms =
+                vedetteIndex > 0
+                  ? [
+                      terms[vedetteIndex],
+                      ...terms.filter((_, index) => index !== vedetteIndex),
+                    ]
+                  : terms
+
+              return {
+                key: entry._id,
+                terms: orderedTerms,
+                definition: entry.definition,
+                note: entry.note,
+              }
+            })
+            .filter((row) => row.terms.length > 0)
+            .sort((a, b) =>
+              (a.terms[0].designation || '').localeCompare(
+                b.terms[0].designation || '',
+                'de'
+              )
             )
-            const orderedTerms =
-              vedetteIndex > 0
-                ? [
-                    terms[vedetteIndex],
-                    ...terms.filter((_, index) => index !== vedetteIndex),
-                  ]
-                : terms
 
-            return {
-              key: entry._id,
-              terms: orderedTerms,
-              definition: entry.definition,
-              note: entry.note,
-            }
-          })
-          .filter((row) => row.terms.length > 0)
-          .sort((a, b) =>
-            (a.terms[0].designation || '').localeCompare(
-              b.terms[0].designation || '',
-              'de'
-            )
+          setRows(rows)
+          setError(null)
+        })
+        .catch((fetchError) => {
+          console.error(
+            'Fehler beim Laden der Begriffe für Anhang 2:',
+            fetchError
           )
+          if (!cancelled && currentRequestId === requestId) {
+            setError(fetchError.message || String(fetchError))
+          }
+        })
+        .finally(() => {
+          if (!cancelled && currentRequestId === requestId) setLoading(false)
+        })
+    }
 
-        setRows(rows)
+    const subscription = sanityClient
+      .listen(listenQuery, {}, { visibility: 'query' })
+      .subscribe({
+        next: refreshRows,
+        error: (listenError) => {
+          console.error(
+            'Echtzeitaktualisierungen für Anhang 2 fehlgeschlagen:',
+            listenError
+          )
+          if (!cancelled) {
+            setError(
+              `Echtzeitaktualisierungen fehlgeschlagen: ${
+                listenError.message || String(listenError)
+              }`
+            )
+          }
+        },
       })
-      .catch((fetchError) => {
-        console.error(
-          'Fehler beim Laden der Begriffe für Anhang 2:',
-          fetchError
-        )
-        if (!cancelled) setError(fetchError.message || String(fetchError))
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
+
+    refreshRows()
 
     return () => {
       cancelled = true
+      subscription.unsubscribe()
     }
   }, [sanityClient])
 
