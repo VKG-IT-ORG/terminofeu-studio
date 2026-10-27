@@ -52,7 +52,7 @@ export default {
       fieldset: 'admin',
       options: {
         list: ag,
-        layout: 'grid',
+        layout: 'list',
       },
     },
     {
