@@ -10,7 +10,7 @@ import { structure, defaultDocumentNode } from './structure'
 import { welcomeWidget } from './desktop-widgets/welcome-widget'
 
 import EntriesStats from './tools/entries-stats/EntriesStats'
-import Miro from './tools/miro/Miro'
+import Anhang2 from './tools/anhang-2/Anhang2.jsx'
 
 // Environment variables for project configuration
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'your-projectID'
@@ -65,7 +65,7 @@ export default defineConfig({
     visionTool(),
     deDELocale(),
   ],
-  tools: [EntriesStats, Miro],
+  tools: [EntriesStats, Anhang2],
   schema: {
     types: schemas,
   },

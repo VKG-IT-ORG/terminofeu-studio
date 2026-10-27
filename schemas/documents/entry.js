@@ -16,9 +16,6 @@ export default {
     {
       name: 'admin',
       title: 'Verwaltungsdaten',
-      options: {
-        columns: 2,
-      },
     },
   ],
   fields: [
@@ -45,6 +42,15 @@ export default {
       },
     },
     {
+      title: 'Übersetzungstatus',
+      type: 'string',
+      name: 'translationStatus',
+      fieldset: 'admin',
+      options: {
+        list: translationStatusList,
+      },
+    },
+    {
       title: 'AG-Zuordnung',
       name: 'assignees',
       type: 'array',
@@ -55,15 +61,7 @@ export default {
         layout: 'grid',
       },
     },
-    {
-      title: 'Übersetzungstatus',
-      type: 'string',
-      name: 'translationStatus',
-      fieldset: 'admin',
-      options: {
-        list: translationStatusList,
-      },
-    },
+
     ...langs.map(({ title, code }) => {
       return {
         title,
