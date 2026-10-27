@@ -54,6 +54,7 @@ const listenQuery =
 
 function Anhang2() {
   const [rows, setRows] = useState([])
+  const [entryCount, setEntryCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const sanityClient = useClient({ apiVersion: '2026-10-27' })
@@ -69,6 +70,7 @@ function Anhang2() {
         .then((entries) => {
           if (cancelled || currentRequestId !== requestId) return
 
+          setEntryCount(entries.length)
           const rows = entries
             .map((entry) => {
               const terms = entry.terms || []
@@ -159,63 +161,72 @@ function Anhang2() {
         </Box>
       ) : error ? (
         <Text>Die Begriffe konnten nicht geladen werden: {error}</Text>
-      ) : rows.length === 0 ? (
-        <Text>Keine Begriffe gefunden.</Text>
       ) : (
-        <TableWrapper>
-          <TermsTable>
-            <thead>
-              <tr>
-                <th scope="col">Begriff</th>
-                <th scope="col">Bedeutung</th>
-                <th scope="col">Erläuterung/Beispiele/Anmerkungen</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.key}>
-                  <td>
-                    <Stack gap={2}>
-                      {row.terms.map((term, index) => (
-                        <Text
-                          key={term._key || `${row.key}-${index}`}
-                          muted={index > 0}
-                          size={index > 0 ? 1 : 2}
-                        >
-                          {index > 0
-                            ? `(${term.designation || '—'})`
-                            : term.designation || '—'}
-                          {term.abbreviation && ` (${term.abbreviation})`}
-                        </Text>
-                      ))}
-                    </Stack>
-                  </td>
-                  <td>
-                    {Array.isArray(row.definition) &&
-                    row.definition.length > 0 ? (
-                      <PortableText
-                        value={row.definition}
-                        components={portableTextComponents}
-                      />
-                    ) : (
-                      '—'
-                    )}
-                  </td>
-                  <td>
-                    {Array.isArray(row.note) && row.note.length > 0 ? (
-                      <PortableText
-                        value={row.note}
-                        components={portableTextComponents}
-                      />
-                    ) : (
-                      '—'
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </TermsTable>
-        </TableWrapper>
+        <>
+          <Box marginBottom={3}>
+            <Text muted>
+              {entryCount} {entryCount === 1 ? 'Eintrag' : 'Einträge'}
+            </Text>
+          </Box>
+          {rows.length === 0 ? (
+            <Text>Keine Begriffe gefunden.</Text>
+          ) : (
+            <TableWrapper>
+              <TermsTable>
+                <thead>
+                  <tr>
+                    <th scope="col">Begriff</th>
+                    <th scope="col">Bedeutung</th>
+                    <th scope="col">Erläuterung/Beispiele/Anmerkungen</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row) => (
+                    <tr key={row.key}>
+                      <td>
+                        <Stack gap={2}>
+                          {row.terms.map((term, index) => (
+                            <Text
+                              key={term._key || `${row.key}-${index}`}
+                              muted={index > 0}
+                              size={index > 0 ? 1 : 2}
+                            >
+                              {index > 0
+                                ? `(${term.designation || '—'})`
+                                : term.designation || '—'}
+                              {term.abbreviation && ` (${term.abbreviation})`}
+                            </Text>
+                          ))}
+                        </Stack>
+                      </td>
+                      <td>
+                        {Array.isArray(row.definition) &&
+                        row.definition.length > 0 ? (
+                          <PortableText
+                            value={row.definition}
+                            components={portableTextComponents}
+                          />
+                        ) : (
+                          '—'
+                        )}
+                      </td>
+                      <td>
+                        {Array.isArray(row.note) && row.note.length > 0 ? (
+                          <PortableText
+                            value={row.note}
+                            components={portableTextComponents}
+                          />
+                        ) : (
+                          '—'
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </TermsTable>
+            </TableWrapper>
+          )}
+        </>
       )}
     </Box>
   )
