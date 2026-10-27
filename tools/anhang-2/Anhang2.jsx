@@ -8,6 +8,29 @@ const TableWrapper = styled.div`
   overflow-x: auto;
 `
 
+const RichText = styled.div`
+  p {
+    margin: 0;
+  }
+
+  p + p {
+    margin-top: 0.5rem;
+  }
+
+  ul,
+  ol {
+    padding-left: 1rem;
+  }
+
+  ul li {
+    padding-bottom: 0.2rem;
+  }
+
+  ol li {
+    padding-bottom: 0.4rem;
+  }
+`
+
 const TermsTable = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -45,7 +68,8 @@ const groqQuery = `
   _id,
   'terms': content.de.terms[]{_key, designation, abbreviation, status},
   'definition': content.de.definition,
-  'note': content.de.note
+  'note': content.de.note,
+  'examples': content.de.examples
 }
 `
 
@@ -90,6 +114,7 @@ function Anhang2() {
                 terms: orderedTerms,
                 definition: entry.definition,
                 note: entry.note,
+                examples: entry.examples,
               }
             })
             .filter((row) => row.terms.length > 0)
@@ -211,11 +236,38 @@ function Anhang2() {
                         )}
                       </td>
                       <td>
-                        {Array.isArray(row.note) && row.note.length > 0 ? (
-                          <PortableText
-                            value={row.note}
-                            components={portableTextComponents}
-                          />
+                        {(Array.isArray(row.note) && row.note.length > 0) ||
+                        (Array.isArray(row.examples) &&
+                          row.examples.length > 0) ? (
+                          <Stack gap={2}>
+                            {Array.isArray(row.note) && row.note.length > 0 && (
+                              <div>
+                                <Box marginBottom={2}>
+                                  <Text weight="semibold">Anmerkungen:</Text>
+                                </Box>
+                                <RichText>
+                                  <PortableText
+                                    value={row.note}
+                                    components={portableTextComponents}
+                                  />
+                                </RichText>
+                              </div>
+                            )}
+                            {Array.isArray(row.examples) &&
+                              row.examples.length > 0 && (
+                                <div>
+                                  <Box marginBottom={2} marginTop={2}>
+                                    <Text weight="semibold">Beispiele:</Text>
+                                  </Box>
+                                  <RichText>
+                                    <PortableText
+                                      value={row.examples}
+                                      components={portableTextComponents}
+                                    />
+                                  </RichText>
+                                </div>
+                              )}
+                          </Stack>
                         ) : (
                           '—'
                         )}
