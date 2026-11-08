@@ -8,6 +8,7 @@ import { documentListWidget } from 'sanity-plugin-dashboard-widget-document-list
 import schemas from './schemas/schema'
 import { structure, defaultDocumentNode } from './structure'
 import { welcomeWidget } from './desktop-widgets/welcome-widget'
+import { webhooksTrigger } from 'sanity-plugin-webhooks-trigger'
 
 import EntriesStats from './tools/entries-stats/EntriesStats'
 import Anhang2 from './tools/anhang-2/Anhang2.jsx'
@@ -61,6 +62,10 @@ export default defineConfig({
           layout: { width: 'small' },
         }),
       ],
+    }),
+    webhooksTrigger({
+      title: 'terminofeu.ch',
+      text: 'Klicke auf den grünen Button, um terminofeu.ch zu aktualisieren. Nach ca. 3 Minuten ist die Website neu aufgebaut. 😃',
     }),
     visionTool(),
     deDELocale(),
