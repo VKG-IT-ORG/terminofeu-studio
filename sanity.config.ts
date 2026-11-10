@@ -1,4 +1,5 @@
-import { buildLegacyTheme, defineConfig } from 'sanity'
+import { defineConfig } from 'sanity'
+import { buildTheme } from '@sanity/themer'
 import { FlameIcon } from './static/FlameIcon'
 import { structureTool } from 'sanity/structure'
 import { deDELocale } from '@sanity/locale-de-de'
@@ -18,15 +19,14 @@ const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'your-projectID'
 const dataset = process.env.SANITY_STUDIO_DATASET || 'production'
 const auth_endpoint = process.env.SANITY_STUDIO_AUTH_ENDPOINT || ''
 
-const themeVariables: Parameters<typeof buildLegacyTheme>[0] & {
-  '--brand-secondary': string
-} = {
-  '--main-navigation-color': '#c05621',
-  '--brand-primary': '#dd6b20',
-  '--brand-secondary': '#f6ad55',
-}
-
-const myTheme = buildLegacyTheme(themeVariables)
+export const theme = buildTheme({
+  light: {
+    accent: '#dd6b20',
+  },
+  dark: {
+    accent: '#dd6b20',
+  },
+})
 
 export default defineConfig({
   title: 'Terminofeu',
@@ -90,7 +90,7 @@ export default defineConfig({
       return prev
     },
   },
-  theme: myTheme,
+  theme,
   auth: {
     providers: (defaultProviders) => [
       {

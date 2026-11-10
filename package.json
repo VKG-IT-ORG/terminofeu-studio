@@ -22,6 +22,7 @@
     "@sanity/client": "^8.11.0",
     "@sanity/dashboard": "^6.0.22",
     "@sanity/locale-de-de": "^1.1.37",
+    "@sanity/themer": "^0.10.6",
     "@sanity/ui": "^4.4.10",
     "@sanity/vision": "^6.22.0",
     "react": "^19.3.1",
