@@ -13,12 +13,19 @@ import { PiGavel } from 'react-icons/pi'
 import Review from './custom-previews/linguistic-review/Review'
 import Comments from './custom-previews/comments/Comments'
 import DocumentsPane from 'sanity-plugin-documents-pane'
+import type {
+  DefaultDocumentNodeResolver,
+  StructureResolver,
+} from 'sanity/structure'
 
 import { langs } from './schemas/data/langs'
 import { statusList } from './schemas/data/statusList'
 import { ag } from './schemas/data/arbeitsgruppen'
 
-export const defaultDocumentNode = (S, { schemaType }) => {
+export const defaultDocumentNode: DefaultDocumentNodeResolver = (
+  S,
+  { schemaType }
+) => {
   if (schemaType === 'entry') {
     return S.document().views([
       S.view.form().icon(AiFillEdit),
@@ -50,7 +57,7 @@ export const defaultDocumentNode = (S, { schemaType }) => {
   }
 }
 
-export const structure = (S, { currentUser }) => {
+export const structure: StructureResolver = (S, { currentUser }) => {
   // Sanity user ids of translators and experts
   const translators = ['puCcAHT8N', 'pfoCdHT74']
   const experts = [...translators, 'pNqrbwTtv']

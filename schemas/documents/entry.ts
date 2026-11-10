@@ -1,5 +1,5 @@
 import { AiOutlineContainer } from 'react-icons/ai'
-import { ALL_FIELDS_GROUP } from 'sanity'
+import { ALL_FIELDS_GROUP, defineArrayMember, defineField, defineType } from 'sanity'
 
 import langFn from '../utils/langFn'
 import { langs } from '../data/langs'
@@ -7,7 +7,7 @@ import { statusList } from '../data/statusList'
 import { translationStatusList } from '../data/translationStatusList'
 import { ag } from '../data/arbeitsgruppen'
 
-export default {
+export default defineType({
   name: 'entry',
   title: 'Eintrag',
   type: 'document',
@@ -19,7 +19,7 @@ export default {
     },
   ],
   fields: [
-    {
+    defineField({
       type: 'string',
       name: 'status',
       title: 'Bearbeitungsstatus',
@@ -28,8 +28,8 @@ export default {
       },
       validation: (Rule) => Rule.required().error('Pflichtfeld'),
       fieldset: 'admin',
-    },
-    {
+    }),
+    defineField({
       type: 'string',
       name: 'level',
       title: 'Stufe',
@@ -40,8 +40,8 @@ export default {
           { title: 'VKF-Begriff', value: 'VKF' },
         ],
       },
-    },
-    {
+    }),
+    defineField({
       title: 'Übersetzungstatus',
       type: 'string',
       name: 'translationStatus',
@@ -49,28 +49,28 @@ export default {
       options: {
         list: translationStatusList,
       },
-    },
-    {
+    }),
+    defineField({
       title: 'AG-Zuordnung',
       name: 'assignees',
       type: 'array',
-      of: [{ type: 'string' }],
+      of: [defineArrayMember({ type: 'string' })],
       fieldset: 'admin',
       options: {
         list: ag,
         layout: 'grid',
       },
-    },
+    }),
 
     ...langs.map(({ title, code }) => {
-      return {
+      return defineField({
         title,
         type: 'string',
         name: code + 'Title',
         hidden: true,
-      }
+      })
     }),
-    {
+    defineField({
       name: 'content',
       type: 'object',
       title: 'Sprachauswahl',
@@ -94,33 +94,33 @@ export default {
         },
       ],
       fields: langs.map((lang) => langFn(lang)),
-    },
-    {
+    }),
+    defineField({
       title: 'Kommentare',
       name: 'notes',
       type: 'array',
-      of: [{ type: 'note' }],
+      of: [defineArrayMember({ type: 'note' })],
       options: {
         sortable: false,
       },
-    },
-    {
+    }),
+    defineField({
       title: 'Abbildungen',
       name: 'illustrations',
       type: 'array',
       description: 'Zeichnungen, grafische Darstellungen oder Schemata',
-      of: [{ type: 'illustration' }],
-    },
+      of: [defineArrayMember({ type: 'illustration' })],
+    }),
 
-    {
+    defineField({
       name: 'approvals',
       title: 'Soll der Begriff bzw. das Konzept in Entwurf übernommen werden?',
       type: 'array',
-      of: [{ type: 'approval' }],
+      of: [defineArrayMember({ type: 'approval' })],
       options: {
         sortable: false,
       },
-    },
+    }),
   ],
   initialValue: {
     status: statusList[1].value,
@@ -144,4 +144,4 @@ export default {
       by: [{ field: 'content.fr.terms[0].designation', direction: 'asc' }],
     },
   ],
-}
+})

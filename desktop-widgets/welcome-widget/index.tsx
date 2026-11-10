@@ -35,5 +35,5 @@ function Welcome() {
 export const welcomeWidget = {
   name: 'welcome-widget',
   component: Welcome,
-  layout: { width: 'full' },
+  layout: { width: 'full' as const },
 }

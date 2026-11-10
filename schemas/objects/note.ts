@@ -1,21 +1,22 @@
 import { BiCommentDetail } from 'react-icons/bi'
+import { defineField, defineType } from 'sanity'
 
-export default {
+export default defineType({
   name: 'note',
   title: 'note',
   type: 'object',
   icon: BiCommentDetail,
   fields: [
-    {
+    defineField({
       name: 'author',
       title: 'Verfasser',
       type: 'string',
       initialValue: (value, { currentUser }) => {
-        return currentUser.name ?? ''
+        return currentUser?.name ?? ''
       },
       validation: (Rule) => Rule.required(),
-    },
-    {
+    }),
+    defineField({
       title: 'Datum',
       name: 'publishedDate',
       type: 'date',
@@ -23,13 +24,13 @@ export default {
       options: {
         dateFormat: 'DD.MM.YYYY',
       },
-    },
-    {
+    }),
+    defineField({
       name: 'text',
       title: 'Kommentar',
       type: 'text',
       validation: (Rule) => Rule.required(),
-    },
+    }),
   ],
   preview: {
     select: {
@@ -50,4 +51,4 @@ export default {
       }
     },
   },
-}
+})

@@ -1,26 +1,27 @@
 import illustrationFn from '../utils/illustrationFn'
 import { langs } from '../data/langs'
+import { defineField, defineType } from 'sanity'
 
-export default {
+export default defineType({
   title: 'Bild',
   name: 'illustration',
   type: 'object',
   fields: [
-    {
+    defineField({
       title: 'Quelle der Abbildung',
       name: 'source',
       type: 'reference',
       validation: (Rule) =>
         Rule.required().error('Quelle fehlt bei der Abbildung'),
       to: [{ type: 'source' }],
-    },
-    {
+    }),
+    defineField({
       type: 'image',
       title: 'Abbildung',
       name: 'image',
       description: 'Sprachneutrale Abbildung mit Nummerierung',
-    },
-    {
+    }),
+    defineField({
       name: 'content',
       type: 'object',
       groups: [
@@ -39,7 +40,7 @@ export default {
         },
       ],
       fields: langs.map((lang) => illustrationFn(lang)),
-    },
+    }),
   ],
   preview: {
     select: {
@@ -53,4 +54,4 @@ export default {
       }
     },
   },
-}
+})

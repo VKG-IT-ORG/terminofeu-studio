@@ -1,5 +1,5 @@
 import { buildLegacyTheme, defineConfig } from 'sanity'
-import { FlameIcon } from './static/FlameIcon.jsx'
+import { FlameIcon } from './static/FlameIcon'
 import { structureTool } from 'sanity/structure'
 import { deDELocale } from '@sanity/locale-de-de'
 import { dashboardTool } from '@sanity/dashboard'
@@ -11,18 +11,22 @@ import { welcomeWidget } from './desktop-widgets/welcome-widget'
 import { webhooksTrigger } from 'sanity-plugin-webhooks-trigger'
 
 import EntriesStats from './tools/entries-stats/EntriesStats'
-import Anhang2 from './tools/anhang-2/Anhang2.jsx'
+import Anhang2 from './tools/anhang-2/Anhang2'
 
 // Environment variables for project configuration
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'your-projectID'
 const dataset = process.env.SANITY_STUDIO_DATASET || 'production'
 const auth_endpoint = process.env.SANITY_STUDIO_AUTH_ENDPOINT || ''
 
-const myTheme = buildLegacyTheme({
+const themeVariables: Parameters<typeof buildLegacyTheme>[0] & {
+  '--brand-secondary': string
+} = {
   '--main-navigation-color': '#c05621',
   '--brand-primary': '#dd6b20',
   '--brand-secondary': '#f6ad55',
-})
+}
+
+const myTheme = buildLegacyTheme(themeVariables)
 
 export default defineConfig({
   title: 'Terminofeu',

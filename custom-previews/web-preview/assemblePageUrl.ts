@@ -1,4 +1,4 @@
-export const assemblePageUrl = (document) => {
+export const assemblePageUrl = (document: { _id?: string; _type: string }) => {
   const rootURL = 'https://terminofeu.ch/de/'
   const { _id, _type } = document
 

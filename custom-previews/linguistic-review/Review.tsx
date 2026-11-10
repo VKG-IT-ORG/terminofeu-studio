@@ -12,7 +12,33 @@ const Container = styled.div`
   margin: 0 auto;
 `
 
-function Review({ document, documentId }) {
+type PortableTextValue = React.ComponentProps<typeof PortableText>['value']
+
+type SourceReference = {
+  type?: string
+  reference?: { title?: string; url?: string }
+}
+
+type EntryContent = {
+  definition?: PortableTextValue
+  note?: PortableTextValue
+  definitionSource?: SourceReference
+  notesSource?: SourceReference
+}
+
+type EntryDocument = {
+  deTitle?: string
+  frTitle?: string
+  content?: { de?: EntryContent; fr?: EntryContent }
+  notes?: { author?: string }[]
+}
+
+type ReviewProps = {
+  document: { published?: EntryDocument; draft?: EntryDocument }
+  documentId: string
+}
+
+function Review({ document, documentId }: ReviewProps) {
   const { published, draft } = document
 
   if (!published) {
@@ -35,8 +61,8 @@ function Review({ document, documentId }) {
 
   const isComment = comments.some((comment) => comment.author === 'Jérôme Pott')
 
-  const [definitionSource, setDefinitionSource] = useState({})
-  const [noteSource, setNoteSource] = useState({})
+  const [definitionSource, setDefinitionSource] = useState<SourceReference>()
+  const [noteSource, setNoteSource] = useState<SourceReference>()
 
   const client = useClient().withConfig({ apiVersion: '2023-01-19' })
 
@@ -59,14 +85,21 @@ function Review({ document, documentId }) {
     const params = { id: documentId }
 
     client
-      .fetch(query, params)
+      .fetch<{
+        content?: {
+          fr?: {
+            definitionSource?: SourceReference
+            notesSource?: SourceReference
+          }
+        }
+      }>(query, params)
       .then((sources) => {
-        const definitionSource = sources.content.fr?.definitionSource
+        const definitionSource = sources.content?.fr?.definitionSource
         if (definitionSource?.reference?.title) {
           setDefinitionSource(definitionSource)
         }
 
-        const noteSource = sources.content.fr?.notesSource
+        const noteSource = sources.content?.fr?.notesSource
         if (noteSource?.reference?.title) {
           setNoteSource(noteSource)
         }
@@ -74,7 +107,7 @@ function Review({ document, documentId }) {
       .catch((error) => console.error(error))
   }, [])
 
-  function referenceType(type) {
+  function referenceType(type?: string) {
     if (!type) {
       return ''
     } else if (type === 'original') {
@@ -86,7 +119,7 @@ function Review({ document, documentId }) {
     }
   }
 
-  function renderText(blocks) {
+  function renderText(blocks?: PortableTextValue) {
     return blocks ? <PortableText value={blocks} /> : ''
   }
 
@@ -103,7 +136,7 @@ function Review({ document, documentId }) {
       </Box>
       {draft ? (
         <Box>
-          <Stack space={3}>
+          <Stack gap={3}>
             <Heading as="h2" size={6}>
               {draft.deTitle}
             </Heading>
@@ -111,17 +144,17 @@ function Review({ document, documentId }) {
               {draft.frTitle}
             </Heading>
 
-            <Text size={3}>{renderText(draft.content.de?.definition)}</Text>
-            <Text size={3}>{renderText(draft.content.fr?.definition)}</Text>
+            <Text size={3}>{renderText(draft.content?.de?.definition)}</Text>
+            <Text size={3}>{renderText(draft.content?.fr?.definition)}</Text>
           </Stack>
 
-          <Stack space={4}>
-            <Text size={2}>{renderText(draft.content.de?.note)}</Text>
-            <Text size={2}>{renderText(draft.content.fr?.note)}</Text>
+          <Stack gap={4}>
+            <Text size={2}>{renderText(draft.content?.de?.note)}</Text>
+            <Text size={2}>{renderText(draft.content?.fr?.note)}</Text>
           </Stack>
         </Box>
       ) : (
-        <Stack space={3}>
+        <Stack gap={3}>
           <Heading as="h2" size={6}>
             {published.deTitle}
           </Heading>
@@ -130,9 +163,9 @@ function Review({ document, documentId }) {
             {published.frTitle}
           </Heading>
 
-          <Stack space={2} paddingBottom={6}>
-            <Text size={3}>{renderText(published.content.de?.definition)}</Text>
-            <Text size={3}>{renderText(published.content.fr?.definition)}</Text>
+          <Stack gap={2} paddingBottom={6}>
+            <Text size={3}>{renderText(published.content?.de?.definition)}</Text>
+            <Text size={3}>{renderText(published.content?.fr?.definition)}</Text>
             {definitionSource && (
               <Text size={2}>
                 {referenceType(definitionSource.type)}
@@ -147,9 +180,9 @@ function Review({ document, documentId }) {
             )}
           </Stack>
 
-          <Stack space={4}>
-            <Text size={2}>{renderText(published.content.de?.note)}</Text>
-            <Text size={2}>{renderText(published.content.fr?.note)}</Text>
+          <Stack gap={4}>
+            <Text size={2}>{renderText(published.content?.de?.note)}</Text>
+            <Text size={2}>{renderText(published.content?.fr?.note)}</Text>
             {noteSource && (
               <Text size={2} muted>
                 {referenceType(noteSource.type)}

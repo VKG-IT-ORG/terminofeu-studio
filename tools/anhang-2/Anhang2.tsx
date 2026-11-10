@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { PortableText } from '@portabletext/react'
-import { Box, Heading, Spinner, Text, Stack } from '@sanity/ui'
+import { Box, Flex, Heading, Spinner, Text, Stack } from '@sanity/ui'
 import { useClient } from 'sanity'
 import styled from 'styled-components'
 
@@ -56,7 +56,12 @@ const TermsTable = styled.table`
   }
 `
 
-const portableTextComponents = {
+type PortableTextValue = React.ComponentProps<typeof PortableText>['value']
+type PortableTextComponents = NonNullable<
+  React.ComponentProps<typeof PortableText>['components']
+>
+
+const portableTextComponents: PortableTextComponents = {
   marks: {
     sup: ({ children }) => <sup>{children}</sup>,
     linkToEntry: ({ children }) => <span>{children}</span>,
@@ -76,11 +81,34 @@ const groqQuery = `
 const listenQuery =
   "*[_type == 'entry' && !(_id in path('drafts.**')) && level == 'IOTH' && status == 'approved']"
 
+type Term = {
+  _key?: string
+  designation?: string
+  abbreviation?: string
+  status?: string
+}
+
+type EntryResult = {
+  _id: string
+  terms?: Term[]
+  definition?: PortableTextValue
+  note?: PortableTextValue
+  examples?: PortableTextValue
+}
+
+type Row = {
+  key: string
+  terms: Term[]
+  definition?: PortableTextValue
+  note?: PortableTextValue
+  examples?: PortableTextValue
+}
+
 function Anhang2() {
-  const [rows, setRows] = useState([])
+  const [rows, setRows] = useState<Row[]>([])
   const [entryCount, setEntryCount] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
   const sanityClient = useClient({ apiVersion: '2026-10-27' })
 
   useEffect(() => {
@@ -90,7 +118,7 @@ function Anhang2() {
     const refreshRows = () => {
       const currentRequestId = ++requestId
       sanityClient
-        .fetch(groqQuery)
+        .fetch<EntryResult[]>(groqQuery)
         .then((entries) => {
           if (cancelled || currentRequestId !== requestId) return
 
@@ -128,13 +156,17 @@ function Anhang2() {
           setRows(rows)
           setError(null)
         })
-        .catch((fetchError) => {
+        .catch((fetchError: unknown) => {
           console.error(
             'Fehler beim Laden der Begriffe für Anhang 2:',
             fetchError
           )
           if (!cancelled && currentRequestId === requestId) {
-            setError(fetchError.message || String(fetchError))
+            setError(
+              fetchError instanceof Error
+                ? fetchError.message
+                : String(fetchError)
+            )
           }
         })
         .finally(() => {
@@ -178,12 +210,12 @@ function Anhang2() {
       </Box>
 
       {loading ? (
-        <Box display="flex" alignItems="center" padding={3}>
+        <Flex align="center" padding={3}>
           <Spinner />
           <Box marginLeft={3}>
             <Text>Lade Begriffe …</Text>
           </Box>
-        </Box>
+        </Flex>
       ) : error ? (
         <Text>Die Begriffe konnten nicht geladen werden: {error}</Text>
       ) : (

@@ -23,11 +23,17 @@ const Comment = styled.p`
   white-space: pre-line;
 `
 
-function Comments({ document }) {
-  function checkComments(comments) {
+type CommentData = { _key?: string; author?: string; text?: string }
+
+type CommentsProps = {
+  document: { displayed: { notes?: CommentData[] } }
+}
+
+function Comments({ document }: CommentsProps) {
+  function checkComments(comments?: CommentData[]) {
     if (comments) {
       return (
-        <Stack space={[3, 3, 4]} marginBottom={6}>
+        <Stack gap={[3, 3, 4]} marginBottom={6}>
           <Heading as="h2" size={2}>
             Kommentare
           </Heading>

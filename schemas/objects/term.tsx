@@ -1,9 +1,10 @@
 import React from 'react'
 import { AiOutlineFileText } from 'react-icons/ai'
+import { defineField, defineType } from 'sanity'
 
 import { filter } from '../utils/sourceFn'
 
-export default {
+export default defineType({
   title: 'Begriff',
   name: 'term',
   type: 'object',
@@ -19,7 +20,7 @@ export default {
     },
   ],
   fields: [
-    {
+    defineField({
       type: 'string',
       name: 'status',
       title: 'Status',
@@ -31,8 +32,8 @@ export default {
           { title: 'Noch zu bestimmen', value: 'to_be_defined' },
         ],
       },
-    },
-    {
+    }),
+    defineField({
       title: 'Quelle',
       name: 'source',
       type: 'reference',
@@ -41,15 +42,15 @@ export default {
       options: {
         filter: filter,
       },
-    },
-    {
+    }),
+    defineField({
       title: 'Begriff',
       name: 'designation',
       type: 'string',
       description:
         'Begriffe sind in ihrer Grundform (z.B. Nominativ Singular) zu erfassen.',
-    },
-    {
+    }),
+    defineField({
       title: 'Quelle',
       name: 'abbreviationSource',
       type: 'reference',
@@ -58,13 +59,13 @@ export default {
       options: {
         filter: filter,
       },
-    },
-    {
+    }),
+    defineField({
       title: 'Abkürzung / Akronym / Silbenkurzwort',
       name: 'abbreviation',
       type: 'string',
       fieldset: 'abbreviation',
-    },
+    }),
   ],
   preview: {
     select: {
@@ -75,7 +76,7 @@ export default {
       status: 'status',
     },
     prepare({ shortTitle, longTitle, term, abbreviation, status }) {
-      const EMOJIS = {
+      const EMOJIS: Record<string, string> = {
         main: '✌️',
         variant: '👍',
         avoid: '👎',
@@ -97,4 +98,4 @@ export default {
       }
     },
   },
-}
+})

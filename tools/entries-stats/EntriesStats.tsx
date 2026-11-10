@@ -43,16 +43,18 @@ const query = `
    ${list2}
 }`
 
-function EntriesStats() {
-  const [data, setData] = useState([])
+type StatEntry = { title: string; Anzahl: number; color: string }
 
-  const [data2, setData2] = useState([])
+function EntriesStats() {
+  const [data, setData] = useState<StatEntry[]>([])
+
+  const [data2, setData2] = useState<StatEntry[]>([])
 
   const sanityClient = useClient({ apiVersion: '2023-01-19' })
 
   useEffect(() => {
     sanityClient
-      .fetch(query)
+      .fetch<Record<string, number>>(query)
       .then((counts) => {
         const newData = [
           {

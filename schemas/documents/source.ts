@@ -1,14 +1,15 @@
 import { AiOutlineFileSearch } from 'react-icons/ai'
+import { defineField, defineType } from 'sanity'
 
 import { langs } from '../data/langs'
 
-export default {
+export default defineType({
   title: 'Quelle',
   name: 'source',
   type: 'document',
   icon: AiOutlineFileSearch,
   fields: [
-    {
+    defineField({
       title: 'Sprache',
       name: 'lang',
       type: 'string',
@@ -16,19 +17,19 @@ export default {
       options: {
         list: langs.map(({ title, code }) => ({ value: code, title })),
       },
-    },
-    {
+    }),
+    defineField({
       name: 'title',
       title: 'Kurztitel',
       type: 'string',
       validation: (Rule) => Rule.required().error('Feld darf nicht leer sein'),
-    },
-    {
+    }),
+    defineField({
       name: 'longTitle',
       title: 'Volltitel',
       type: 'string',
-    },
-    {
+    }),
+    defineField({
       name: 'date',
       title: 'Stand',
       type: 'date',
@@ -36,13 +37,13 @@ export default {
         dateFormat: 'DD.MM.YYYY',
       },
       validation: (Rule) => Rule.required().error('Feld darf nicht leer sein'),
-    },
-    {
+    }),
+    defineField({
       name: 'url',
       title: 'URL',
       type: 'url',
       description: 'Falls vorhanden, sonst leer lassen.',
-    },
+    }),
   ],
   initialValue: {
     lang: 'de',
@@ -68,9 +69,9 @@ export default {
       } else {
         return {
           title: previewTitle,
-          subtitle: null,
+          subtitle: undefined,
         }
       }
     },
   },
-}
+})

@@ -11,7 +11,8 @@
     "start": "sanity start",
     "build": "sanity build",
     "deploy": "sanity deploy",
-    "functions": "sanity functions dev"
+    "functions": "sanity functions dev",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "sanity"
@@ -40,6 +41,7 @@
   },
   "packageManager": "pnpm@12.15.0",
   "devDependencies": {
+    "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "prettier": "^3.9.10",
     "typescript": "^7.0.2"

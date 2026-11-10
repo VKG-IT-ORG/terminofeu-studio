@@ -1,20 +1,21 @@
 import React from 'react'
+import { defineField, defineType } from 'sanity'
 
-export default {
+export default defineType({
   name: 'approval',
   title: 'approval',
   type: 'object',
   fields: [
-    {
+    defineField({
       name: 'author',
       title: 'Verfasser',
       type: 'string',
       initialValue: (value, { currentUser }) => {
-        return currentUser.name ?? ''
+        return currentUser?.name ?? ''
       },
       validation: (Rule) => Rule.required(),
-    },
-    {
+    }),
+    defineField({
       title: 'Zustimmung',
       name: 'approval',
       type: 'string',
@@ -26,7 +27,7 @@ export default {
         ],
         layout: 'radio',
       },
-    },
+    }),
   ],
   preview: {
     select: {
@@ -34,7 +35,7 @@ export default {
       approval: 'approval',
     },
     prepare({ author, approval }) {
-      const EMOJIS = {
+      const EMOJIS: Record<string, string> = {
         approve: '✅',
         reject: '❌',
         changes_requested: '➖',
@@ -46,4 +47,4 @@ export default {
       }
     },
   },
-}
+})

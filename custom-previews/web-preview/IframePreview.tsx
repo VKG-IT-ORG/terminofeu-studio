@@ -16,7 +16,11 @@ const Preview = styled.div`
   }
 `
 
-function IframePreview({ document }) {
+function IframePreview({
+  document,
+}: {
+  document: { displayed?: { _id: string; _type: string } }
+}) {
   const { displayed } = document
   if (!displayed) {
     return <Message>There is no document to preview</Message>

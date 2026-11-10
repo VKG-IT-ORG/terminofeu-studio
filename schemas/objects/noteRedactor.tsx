@@ -1,16 +1,18 @@
 import React from 'react'
 import { ImSuperscript } from 'react-icons/im'
-
 import { AiOutlineLink } from 'react-icons/ai'
+import { defineArrayMember, defineField, defineType } from 'sanity'
 
-const superscriptRender = (props) => <sup>{props.children}</sup>
+const superscriptRender = (props: { children: React.ReactNode }) => (
+  <sup>{props.children}</sup>
+)
 
-export default {
+export default defineType({
   title: 'Block Content',
-  name: 'blockContent',
+  name: 'noteRedactor',
   type: 'array',
   of: [
-    {
+    defineArrayMember({
       type: 'block',
       // Styles let you set what your user can mark up blocks with. These
       // corrensponds with HTML tags, but you can set any title or value
@@ -24,7 +26,6 @@ export default {
         // preference or highlighting by editors.
         decorators: [
           { title: 'Strong', value: 'strong' },
-          { title: 'Emphasis', value: 'em' },
           {
             title: 'Superscript',
             value: 'sup',
@@ -34,7 +35,7 @@ export default {
         ],
         // Annotations can be any object structure – e.g. a link or a footnote.
         annotations: [
-          {
+          defineField({
             title: 'Link zum Eintrag',
             name: 'linkToEntry',
             type: 'reference',
@@ -42,9 +43,9 @@ export default {
             validation: (Rule) =>
               Rule.required().error('Feld darf nicht leer sein'),
             icon: AiOutlineLink,
-          },
+          }),
         ],
       },
-    },
+    }),
   ],
-}
+})

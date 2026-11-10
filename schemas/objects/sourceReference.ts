@@ -1,6 +1,7 @@
 import { filter } from '../utils/sourceFn'
+import { defineField, defineType } from 'sanity'
 
-export default {
+export default defineType({
   name: 'sourceReference',
   title: 'source',
   type: 'object',
@@ -9,7 +10,7 @@ export default {
     collapsed: true,
   },
   fields: [
-    {
+    defineField({
       name: 'reference',
       title: 'Quelle',
       type: 'reference',
@@ -17,8 +18,8 @@ export default {
       options: {
         filter: filter,
       },
-    },
-    {
+    }),
+    defineField({
       type: 'string',
       name: 'type',
       title: 'Verweis',
@@ -28,6 +29,6 @@ export default {
           { title: 'wörtlich übernommen', value: 'original' },
         ],
       },
-    },
+    }),
   ],
-}
+})
