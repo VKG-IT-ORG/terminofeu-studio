@@ -12,7 +12,8 @@
     "build": "sanity build",
     "deploy": "sanity deploy",
     "functions": "sanity functions dev",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "types": "sanity schema extract --enforce-required-fields && sanity typegen generate"
   },
   "keywords": [
     "sanity"
